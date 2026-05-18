@@ -132,11 +132,13 @@ User question: ${query}`;
 
     // 8. Track usage
     const tokensUsed = completion.usage?.total_tokens || 0;
-    await supabase.rpc('increment_usage', {
-      p_user_id: user.id,
-      p_tokens: tokensUsed,
-      p_type: 'chat',
-    }).catch(() => {}); // non-blocking
+    try {
+      await supabase.rpc('increment_usage', {
+        p_user_id: user.id,
+        p_tokens: tokensUsed,
+        p_type: 'chat',
+      });
+    } catch (_) {} // non-blocking
 
     // 9. Return response with relevant node references
     return NextResponse.json({
